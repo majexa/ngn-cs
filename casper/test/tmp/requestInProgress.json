@@ -1,0 +1,5 @@
+[
+  ["~thenUrl", "default/testForm/requestLoaded"],
+  ["~submit", "form#asd", { "asd": "123" }],
+  ["~checkText", "#result", "success"]
+]
