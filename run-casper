@@ -1,1 +1,0 @@
-php C:/www/refactor/ngn-env/projects/test/cmd.php preTest/userRegPhone; casperjs C:/www/refactor/ngn-env/ngn/more/casper/test.js --projectDir=C:/www/refactor/ngn-env/projects/test --disableAfterCaptureCmd=1 --stepsFile=userRegPhone --rumaxFolder=C:/1/captures --ngnPath=C:/www/refactor/ngn-env/ngn

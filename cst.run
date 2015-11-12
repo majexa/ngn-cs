@@ -1,0 +1,14 @@
+#!/bin/sh
+# ngn
+if [ -z "$1" ]
+  then
+    echo "First argument (project name) is required"
+    exit 1
+fi
+if [ -z "$2" ]
+  then
+    echo "Second argument (test name) is required"
+    exit 1
+fi
+
+casperjs /home/user/ngn-env/ngn-cst/casper/testProject.js --projectName=$1 --testName=$2
