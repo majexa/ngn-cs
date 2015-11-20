@@ -238,8 +238,13 @@ module.exports = new Class({
       var data = require('fs').read(file, 'utf-8');
       try {
         this.options.steps = JSON.decode(data);
+        if (!this.options.steps[0]) throw new Error('JSON contents error in file: ' + file);
       } catch (e) {
-        throw new Error('JSON parse error in file: ' + file);
+        if (e.message.test(/Parse error/)) {
+          throw new Error('Parse error in file: ' + file);
+        } else {
+          throw e;
+        }
       }
     } else {
       throw new Error('define testName');
@@ -255,7 +260,7 @@ module.exports = new Class({
   },
 
   replaceNgnPath: function(step) {
-    if (step[2] && this.options.ngnPath) {
+    if (step && step[2] && this.options.ngnPath) {
       if (typeof step[2] == 'object') {
         for (var j in step[2]) {
           if (step[2][j] instanceof Array) {

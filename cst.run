@@ -2,7 +2,7 @@
 # ngn
 if [ -z "$1" ]
   then
-    echo "First argument (project name) is required"
+    echo "First argument (project name) is required. Use 'test' project name for common project tests"
     exit 1
 fi
 if [ -z "$2" ]
@@ -11,5 +11,6 @@ if [ -z "$2" ]
     exit 1
 fi
 
-run site $1 casperPreTest/$2 quietly
+run site $1 casperPreTest/$2 ngn-cst quietly
+run site $1 cc
 casperjs /home/user/ngn-env/ngn-cst/casper/testProject.js --projectName=$1 --testName=$2
