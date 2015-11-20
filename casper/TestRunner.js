@@ -291,8 +291,6 @@ module.exports = new Class({
           steps.push(['outputRequestLoaded']);
           steps.push(['waitForRequest']);
         }
-        //steps.push(['wait', 2000]);
-        //console.debug('>>> ' + this.options.disableCapture);
         if (!this.options.disableCapture) steps.push(['_capture', 'after ' + step[0]]);
       } else {
         steps.push(step);

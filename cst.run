@@ -11,4 +11,5 @@ if [ -z "$2" ]
     exit 1
 fi
 
+run site $1 casperPreTest/$2 quietly
 casperjs /home/user/ngn-env/ngn-cst/casper/testProject.js --projectName=$1 --testName=$2

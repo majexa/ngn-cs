@@ -43,7 +43,6 @@ module.exports = new Class({
    * @param {string} options - Look at NgnCl::strParamsToArray for options format
    */
   afterCaptureCmd: function(runner, options) {
-    this.log('+++');
     if (this.casper.cli.options.disableAfterCaptureCmd) return;
     this.execFile(runner, options, function(stdout) {
       this.log('capture result:\n' + stdout, 3);

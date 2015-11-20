@@ -27,7 +27,9 @@ module.exports = new Class({
     if (!this.options.projectsDir) throw new Error('option "projectsDir" is required');
     if (!this.options.projectName) throw new Error('option "projectName" is required');
     // Мёрджим с конфигом проекта
+    var ngnBasePathCst = this.options.ngnBasePaths[0];
     this.options = Object.merge(this.options, require(this.options.projectsDir + '/' + this.options.projectName + '/site/casper/config'));
+    this.options.ngnBasePaths.push(ngnBasePathCst);
     this.projectDir = this.options.projectsDir + '/' + this.options.projectName;
     if (!require('fs').exists(this.projectDir)) throw new Error('folder "' + this.projectDir + '" does not exists');
     this.log('init casper', 3);
@@ -38,7 +40,7 @@ module.exports = new Class({
       this.startActions();
     } else {
       if (!this.options.projects[this.options.projectName]) {
-        throw new Error('Project "' + this.options.projectName +'" does not exists');
+        throw new Error('Project "' + this.options.projectName + '" does not exists');
       }
       var domain = this.options.projects[this.options.projectName];
       this.baseUrl = 'http://' + domain;
@@ -47,11 +49,15 @@ module.exports = new Class({
   },
 
   startActions: function() {
+    phantom.addCookie({
+      name: 'debugKey',
+      value: 'asd',
+      domain: 'test.karantin.majexa.ru'
+    });
     this.casper.start(this.baseUrl, function(page) {
       if (page.status != 200) {
         throw new Error('Base URL "' + this.baseUrl + '" not works. Status: ' + page.status);
       }
-      //page.addCookie();
     }.bind(this));
     this.beforeRun();
     this.run();
