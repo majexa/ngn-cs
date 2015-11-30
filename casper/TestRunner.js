@@ -47,6 +47,7 @@ module.exports = new Class({
     });
     var runner = this;
     this.casper.thenUrl = function(url, callback) {
+      console.log('Open url "' + runner.baseUrl + '/' + url + '"');
       this.thenOpen(runner.baseUrl + '/' + url, function() {
         this.evaluate(function() {
         });
