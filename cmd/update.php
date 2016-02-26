@@ -1,5 +1,8 @@
 <?php
 
+// Обновляет casper/config.js для всех проектов
+
+$debugKey = file_get_contents(File::checkExists(NGN_PATH.'/.debugKey'));
 $ngnEnvPath = NGN_ENV_PATH;
 $ngnBasePaths = json_encode(Ngn::$basePaths);
 $projects = json_encode(Arr::get(require NGN_ENV_PATH.'/config/projects.php', 'domain', 'name'));
@@ -10,10 +13,14 @@ module.exports = {
   rumaxFolder: '$ngnEnvPath/rumax/web/captures',
   ngnPath: '$ngnEnvPath/ngn',
   ngnBasePaths: $ngnBasePaths,
-  projects: $projects
+  projects: $projects,
+  debugKey: '$debugKey'
 };
 JS
 );
+
+
+
 
 foreach (glob(NGN_ENV_PATH.'/projects/*', GLOB_ONLYDIR) as $f) {
   $name = basename($f);

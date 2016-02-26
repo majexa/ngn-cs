@@ -1,6 +1,11 @@
 var require = patchRequire(require);
 var Project = require('Project');
 
+var thrownewError = function(s) {
+  console.log('ERROR: ' + s);
+  throw new Error(s);
+};
+
 /**
  * available options:
  *  testName - файл {testName}.json должен находиться в одной из базовых Ngn директорий в подпапке casper/test
@@ -145,7 +150,7 @@ module.exports = new Class({
       method = this.casper.page[methodName];
       methodBind = this.casper;
     } else {
-      throw new Error('Casper or TestRunner method "' + methodName + '" is absent');
+      thrownewError('Casper or TestRunner method "' + methodName + '" is absent');
     }
     var params = null;
     if (this.isCallbackMethod(methodName)) {
@@ -170,7 +175,7 @@ module.exports = new Class({
     if (methodName.substr(0, 5) == 'check') {
       var r = method();
       if (r[0] !== !negativeCheck) {
-        throw new Error(r[negativeCheck ? 2 : 1]);
+        thrownewError(r[negativeCheck ? 2 : 1]);
       }
       this.log((negativeCheck ? '!' : '') + methodName + ' success');
       return;
@@ -205,7 +210,7 @@ module.exports = new Class({
   },
 
   runStep: function() {
-    if (!this.options.steps[this.i]) throw new Error('next step does not exists');
+    if (!this.options.steps[this.i]) thrownewError('next step does not exists');
     var step = this.options.steps[this.i];
     var params = '';
     if (step.length > 1) params = ' (' + step.slice(1, step.length).join(', ') + ')';
@@ -222,37 +227,33 @@ module.exports = new Class({
    * Получает массив с шагами из stdin'а или json-файла
    */
   initSteps: function() {
-    if (this.options.testName) {
-      var file = null;
-      var _file = this.options.testName + '.json';
-      var found = false;
-      for (var i = 0; i < this.options.ngnBasePaths.length; i++) {
-        var f = this.options.ngnBasePaths[i] + '/casper/test/' + _file;
-        if (require('fs').exists(f)) {
-          file = f;
-          found = true;
-          break;
-        }
+    if (!this.options.testName) thrownewError('define testName');
+    var file = null;
+    var _file = this.options.testName + '.json';
+    var found = false;
+    for (var i = 0; i < this.options.ngnBasePaths.length; i++) {
+      var f = this.options.ngnBasePaths[i] + '/casper/test/' + _file;
+      if (require('fs').exists(f)) {
+        file = f;
+        found = true;
+        break;
       }
-      if (!found) throw new Error('File "' + _file + '" not found');
-      this.log('init steps from "' + file + '"', 2);
-      var data = require('fs').read(file, 'utf-8');
-      try {
-        this.options.steps = JSON.decode(data);
-        if (!this.options.steps[0]) throw new Error('JSON contents error in file: ' + file);
-      } catch (e) {
-        if (e.message.test(/Parse error/)) {
-          throw new Error('Parse error in file: ' + file);
-        } else {
-          throw e;
-        }
+    }
+    if (!found) {
+      require('utils').dump(this.options.ngnBasePaths);
+      thrownewError('File "casper/test/' + _file + '" not found in ngnBasePaths');
+    }
+    this.log('init steps from "' + file + '"', 2);
+    var data = require('fs').read(file, 'utf-8');
+    try {
+      this.options.steps = JSON.decode(data);
+      if (!this.options.steps[0]) thrownewError('JSON contents error in file: ' + file);
+    } catch (e) {
+      if (e.message.test(/Parse error/)) {
+        thrownewError('Parse error in file: ' + file);
+      } else {
+        throw e;
       }
-    } else {
-      throw new Error('define testName');
-      this.log('init stdin steps', 3);
-      var steps = require('system').stdin.readLine();
-      if (!steps.replace(new RegExp('\\s', 'g'), '')) throw new Error('Wrong or empty json in stdin');
-      this.options.steps = JSON.decode(steps);
     }
     this.log('initialized:', 2);
     for (var i = 0; i < this.options.steps.length; i++) {

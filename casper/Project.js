@@ -4,6 +4,10 @@ var Rumax = require('Rumax');
 var c = function(v) {
   require('utils').dump(v);
 };
+var thrownewError = function(s) {
+  console.log('ERROR: ' + s);
+  throw new Error(s);
+};
 
 module.exports = new Class({
   Implements: [Rumax, Options],
@@ -14,9 +18,9 @@ module.exports = new Class({
 
   /**
    * available options:
-   *   projectDir - директория проекта
-   *   rumaxFolder - директория для каптч
-   *   disableAfterCaptureCmd - выключает создание капч после каждой команды
+   *   projectDir
+   *   rumaxFolder
+   *   disableAfterCaptureCmd
    *   disableCapture
    */
   initialize: function(options) {
@@ -24,14 +28,13 @@ module.exports = new Class({
     this.setOptions(options);
     this.casper = require('casper').create(this.options.casperOptions);
     this.options = Object.merge(this.options, this.casper.cli.options);
-    if (!this.options.projectsDir) throw new Error('option "projectsDir" is required');
-    if (!this.options.projectName) throw new Error('option "projectName" is required');
-    // Мёрджим с конфигом проекта
+    if (!this.options.projectsDir) thrownewError('option "projectsDir" is required');
+    if (!this.options.projectName) thrownewError('option "projectName" is required');
     var ngnBasePathCst = this.options.ngnBasePaths[0];
     this.options = Object.merge(this.options, require(this.options.projectsDir + '/' + this.options.projectName + '/site/casper/config'));
     this.options.ngnBasePaths.push(ngnBasePathCst);
     this.projectDir = this.options.projectsDir + '/' + this.options.projectName;
-    if (!require('fs').exists(this.projectDir)) throw new Error('folder "' + this.projectDir + '" does not exists');
+    if (!require('fs').exists(this.projectDir)) thrownewError('folder "' + this.projectDir + '" does not exists');
     this.log('init casper', 3);
     this.initCasper();
     this.init();
@@ -40,23 +43,26 @@ module.exports = new Class({
       this.startActions();
     } else {
       if (!this.options.projects[this.options.projectName]) {
-        throw new Error('Project "' + this.options.projectName + '" does not exists');
+        thrownewError('Project "' + this.options.projectName + '" does not exists');
       }
-      var domain = this.options.projects[this.options.projectName];
-      this.baseUrl = 'http://' + domain;
+      this.domain = this.options.projects[this.options.projectName];
+      this.baseUrl = 'http://' + this.domain;
       this.startActions();
     }
   },
 
   startActions: function() {
-    phantom.addCookie({
-      name: 'debugKey',
-      value: 'asd',
-      domain: 'test.karantin.majexa.ru'
-    });
+    if (this.options.debugKey) {
+      console.log('setting up debuKey for ' + this.domain);
+      phantom.addCookie({
+        name: 'debugKey',
+        value: this.options.debugKey,
+        domain: this.domain
+      });
+    }
     this.casper.start(this.baseUrl, function(page) {
       if (page.status != 200) {
-        throw new Error('Base URL "' + this.baseUrl + '" not works. Status: ' + page.status);
+        thrownewError('Base URL "' + this.baseUrl + '" not works. Status: ' + page.status);
       }
     }.bind(this));
     this.beforeRun();
@@ -81,7 +87,7 @@ module.exports = new Class({
   },
 
   run: function() {
-    throw new Error('abstract');
+    thrownewError('abstract');
   }
 
 });
