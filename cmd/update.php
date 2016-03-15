@@ -19,9 +19,6 @@ module.exports = {
 JS
 );
 
-
-
-
 foreach (glob(NGN_ENV_PATH.'/projects/*', GLOB_ONLYDIR) as $f) {
   $name = basename($f);
   $ngnBasePaths = `run site $name "print json_encode(Ngn::\\\$basePaths);"`;

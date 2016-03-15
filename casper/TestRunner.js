@@ -240,7 +240,6 @@ module.exports = new Class({
       }
     }
     if (!found) {
-      require('utils').dump(this.options.ngnBasePaths);
       thrownewError('File "casper/test/' + _file + '" not found in ngnBasePaths');
     }
     this.log('init steps from "' + file + '"', 2);
