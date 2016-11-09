@@ -13,7 +13,7 @@ var thrownewError = function(s) {
 module.exports = new Class({
   Extends: Project,
 
-  logLevel: 2,
+  logLevel: 4,
   i: 0,
   callbackPrefixes: ['then', 'wait', 'submit'],
 
@@ -240,7 +240,8 @@ module.exports = new Class({
       }
     }
     if (!found) {
-      thrownewError('File "casper/test/' + _file + '" not found in ngnBasePaths');
+      thrownewError('File "casper/test/' + _file + '" not found in ngnBasePaths: ' +
+        this.options.ngnBasePaths.join("\n"));
     }
     this.log('init steps from "' + file + '"', 2);
     var data = require('fs').read(file, 'utf-8');

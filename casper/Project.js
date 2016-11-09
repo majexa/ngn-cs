@@ -43,7 +43,7 @@ module.exports = new Class({
       this.startActions();
     } else {
       if (!this.options.projects[this.options.projectName]) {
-        thrownewError('Project "' + this.options.projectName + '" does not exists');
+        thrownewError('Project "' + this.options.projectName + '" does not exists. Use: run ngn-cst/cmd/update ngn-cst');
       }
       this.domain = this.options.projects[this.options.projectName];
       this.baseUrl = 'http://' + this.domain;
