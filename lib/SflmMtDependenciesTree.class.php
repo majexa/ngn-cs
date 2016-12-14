@@ -2,7 +2,7 @@
 
 use Tree\Node\Node;
 
-class SflmMtDependenciesBuilder extends SflmMtDependencies {
+class SflmMtDependenciesTree extends SflmMtDependencies {
 
   public $rootNode;
 

@@ -14,7 +14,7 @@ class SflmClassNode extends Node {
 
 }
 
-class SflmJsClassesBuilder extends SflmJsClasses {
+class SflmJsClassesTree extends SflmJsClasses {
 
   /**
    * @var Node
