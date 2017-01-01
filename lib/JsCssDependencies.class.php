@@ -8,13 +8,18 @@ class JsCssDependencies extends ArrayAccesseble {
     return str_replace('.', '_', strtolower(Misc::removePrefix('Ngn.', $jsClass)));
   }
 
-  public $css;
+  /**
+   * @var SflmCss
+   */
+  protected $css;
 
-  function __construct($jsClass) {
+  protected $frontendName;
+
+  function __construct($jsClass, $exclude = null) {
     $css = $this->css = new SflmCss;
     //
-    $fronendName = 'bld_'.self::cssLib($jsClass);
-    $frontend = Sflm::frontend('js', $fronendName, [
+    $this->frontendName = self::cssLib($jsClass);
+    $frontend = Sflm::frontend('js', $this->frontendName, [
       'jsClassesClass' => 'SflmJsClassesTree',
     ]);
     $frontend->cleanPathsCache();
@@ -36,8 +41,24 @@ class JsCssDependencies extends ArrayAccesseble {
         $paths[$lib] = $_paths;
       }
     }
-    //
+    if ($exclude) {
+      foreach ($paths as $lib => $_paths) {
+        if (preg_match('/'.$exclude.'/', $lib)) unset($paths[$lib]);
+        foreach ($_paths as $path) {
+          if (preg_match('/'.$exclude.'/', $path)) $_paths = Arr::drop($_paths, $path);
+        }
+      }
+    }
     $this->r = $paths;
+  }
+
+  function store($folder) {
+    $c = '';
+    foreach ($this->r as $lib => $paths) {
+      $c .= $this->css->extractCode($paths);
+    }
+    Dir::make($folder);
+    file_put_contents($folder.'/'.$this->frontendName.'.css', $c);
   }
 
 }
