@@ -15,7 +15,7 @@ class JsCssDependencies extends ArrayAccesseble {
     //
     $fronendName = 'bld_'.self::cssLib($jsClass);
     $frontend = Sflm::frontend('js', $fronendName, [
-      'jsClassesClass' => 'SflmJsClassesBuilder',
+      'jsClassesClass' => 'SflmJsClassesTree',
     ]);
     $frontend->cleanPathsCache();
     $frontend->classes->frontendClasses->clean();
