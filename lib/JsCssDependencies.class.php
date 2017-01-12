@@ -16,6 +16,7 @@ class JsCssDependencies extends ArrayAccesseble {
   protected $frontendName;
 
   function __construct($jsClass, $exclude = null) {
+print_r('>>>'.$exclude);
     $css = $this->css = new SflmCss;
     //
     $this->frontendName = self::cssLib($jsClass);
@@ -42,10 +43,12 @@ class JsCssDependencies extends ArrayAccesseble {
       }
     }
     if ($exclude) {
-      foreach ($paths as $lib => $_paths) {
+      foreach ($paths as $lib => &$_paths) {
         if (preg_match('/'.$exclude.'/', $lib)) unset($paths[$lib]);
         foreach ($_paths as $path) {
-          if (preg_match('/'.$exclude.'/', $path)) $_paths = Arr::drop($_paths, $path);
+          if (preg_match('/'.$exclude.'/', $path)) {
+            $_paths = Arr::drop($_paths, $path);
+          }
         }
       }
     }
