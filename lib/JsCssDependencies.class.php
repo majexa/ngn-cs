@@ -11,12 +11,11 @@ class JsCssDependencies extends ArrayAccesseble {
   /**
    * @var SflmCss
    */
-  protected $css;
+  public $css;
 
   protected $frontendName;
 
   function __construct($jsClass, $exclude = null) {
-print_r('>>>'.$exclude);
     $css = $this->css = new SflmCss;
     //
     $this->frontendName = self::cssLib($jsClass);
@@ -34,12 +33,14 @@ print_r('>>>'.$exclude);
     $paths['common'] = $css->getPaths('common');
     //
     $visitor = new PreOrderVisitor;
-    $yield = $frontend->classes->rootNode->accept($visitor);
-    foreach ($yield as $node) {
-      $class = $node->getValue();
-      $lib = JsCssDependencies::cssLib($class);
-      if ($_paths = $css->getPaths($lib)) {
-        $paths[$lib] = $_paths;
+    foreach ($frontend->classes->rootNodes as $rootNode) {
+      $yield = $rootNode->accept($visitor);
+      foreach ($yield as $node) {
+        $class = $node->getValue();
+        $lib = JsCssDependencies::cssLib($class);
+        if ($_paths = $css->getPaths($lib)) {
+          $paths[$lib] = $_paths;
+        }
       }
     }
     if ($exclude) {
@@ -62,6 +63,7 @@ print_r('>>>'.$exclude);
     }
     Dir::make($folder);
     file_put_contents($folder.'/'.$this->frontendName.'.css', $c);
+    return $folder.'/'.$this->frontendName.'.css';
   }
 
 }

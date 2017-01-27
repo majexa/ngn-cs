@@ -23,7 +23,6 @@ class SflmJsClassBuilder {
     ]);
     $this->frontend->addPath('i/js/ngn/Ngn.js');
     foreach (explode(',', $classes) as $class) {
-      //print "adding class '$class'\n";
       $class = trim($class);
       $this->frontend->addClass($class);
     }
@@ -31,8 +30,22 @@ class SflmJsClassBuilder {
     return $this;
   }
 
+  function processHtmlAndStore($html, $fileName, $locale = 'en-US') {
+    SflmCache::clean();
+    $this->frontend = new SflmFrontendJsBuild(new SflmJs($fileName), $fileName, [
+      'locale' => $locale,
+      'jsClassesClass' => 'SflmJsClassesTree',
+      'mtDependenciesClass' => 'SflmMtDependenciesTree'
+    ]);
+    $this->frontend->addPath('i/js/ngn/Ngn.js');
+    $this->frontend->processHtml($html, 'builder');
+    $this->frontend->store();
+    return $this;
+  }
+
+
   function report() {
-    if (!$this->frontend->classes->rootNode) {
+    if (!$this->frontend->classes->rootNodes) {
       return 'no changes. clear cache';
     }
     // MooTools dependencies tree
@@ -48,11 +61,14 @@ class SflmJsClassBuilder {
     // Ngn dependencies tree
     $tree = '';
     $visitor = new PreOrderVisitor;
-    $yield = $this->frontend->classes->rootNode->accept($visitor);
-    foreach ($yield as $node) {
-      /* @var SflmClassNode $node */
-      $tree .= str_repeat('- ', $node->getDepth()).$node->getValue()."\n";
+    foreach ($this->frontend->classes->rootNodes as $rootNode) {
+      $yield = $rootNode->accept($visitor);
+      foreach ($yield as $node) {
+        /* @var SflmClassNode $node */
+        $tree .= str_repeat('- ', $node->getDepth()).$node->getValue()."\n";
+      }
     }
+    // $yield = $this->frontend->classes->rootNode->accept($visitor);
     $report['dependencies']['ngn'] = $tree;
     return $report;
   }

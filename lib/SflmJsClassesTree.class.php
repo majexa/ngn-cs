@@ -17,21 +17,22 @@ class SflmClassNode extends Node {
 class SflmJsClassesTree extends SflmJsClasses {
 
   /**
-   * @var Node
+   * @var array
    */
-  public $rootNode;
+  public $rootNodes;
 
   /**
    * @var Node
    */
   public $parentNode;
 
-  function addClass($class, $source, $parent, $strict = true) {
+  function addClass($class, $source, $parent = null, $strict = true) {
     if ($this->frontendClasses->exists($class)) {
       return;
     }
     if ($parent === 'root') {
-      $node = $this->rootNode = $this->parentNode = new SflmClassNode($class, $source, $parent);
+      output3($class);
+      $this->rootNodes[] = $node = $this->parentNode = new SflmClassNode($class, $source, $parent);
     } else {
       $node = new SflmClassNode($class, $source, $parent);
       $this->parentNode->addChild($node);
