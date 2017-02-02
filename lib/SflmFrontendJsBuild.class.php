@@ -10,8 +10,8 @@ class SflmFrontendJsBuild extends SflmFrontendJs {
 
   protected function preNgnCode() {
     return <<<JS
-//Locale.define('{$this->options['locale']}', 'Dummy', 'dummy', 'dummy');
-//Locale.use('{$this->options['locale']}');
+Locale.define('{$this->options['locale']}', 'Dummy', 'dummy', 'dummy');
+Locale.use('{$this->options['locale']}');
 JS;
   }
 

@@ -31,7 +31,6 @@ class SflmJsClassesTree extends SflmJsClasses {
       return;
     }
     if ($parent === 'root') {
-      output3($class);
       $this->rootNodes[] = $node = $this->parentNode = new SflmClassNode($class, $source, $parent);
     } else {
       $node = new SflmClassNode($class, $source, $parent);

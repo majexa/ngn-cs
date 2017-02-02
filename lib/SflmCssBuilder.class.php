@@ -2,35 +2,24 @@
 
 use Tree\Visitor\PreOrderVisitor;
 
-class JsCssDependencies extends ArrayAccesseble {
+class SflmCssBuilder {
 
-  static function cssLib($jsClass) {
-    return str_replace('.', '_', strtolower(Misc::removePrefix('Ngn.', $jsClass)));
+  protected $css;
+
+  function __construct() {
+    $this->css = new SflmCss;
   }
 
-  /**
-   * @var SflmCss
-   */
-  public $css;
-
-  protected $frontendName;
-
-  function __construct($jsClass, $exclude = null) {
-    $css = $this->css = new SflmCss;
-    //
-    $this->frontendName = self::cssLib($jsClass);
-    $frontend = Sflm::frontend('js', $this->frontendName, [
+  function processHtml($html, $fileName, $exclude = null) {
+    $frontend = new SflmFrontendJs(new SflmJs($fileName), $fileName, [
       'jsClassesClass' => 'SflmJsClassesTree',
     ]);
     $frontend->cleanPathsCache();
     $frontend->classes->frontendClasses->clean();
-    if ($frontend->classes->frontendClasses->exists($jsClass)) {
-      throw new Exception('clean cache does not work');
-    }
-    $frontend->addClass($jsClass);
+    $frontend->processHtml($html, 'builder');
     //
     $paths = [];
-    $paths['common'] = $css->getPaths('common');
+    $paths['common'] = $this->css->getPaths('common');
     //
     $visitor = new PreOrderVisitor;
     foreach ($frontend->classes->rootNodes as $rootNode) {
@@ -38,7 +27,7 @@ class JsCssDependencies extends ArrayAccesseble {
       foreach ($yield as $node) {
         $class = $node->getValue();
         $lib = JsCssDependencies::cssLib($class);
-        if ($_paths = $css->getPaths($lib)) {
+        if ($_paths = $this->css->getPaths($lib)) {
           $paths[$lib] = $_paths;
         } else {
           output2("NONE: $lib");
@@ -55,17 +44,17 @@ class JsCssDependencies extends ArrayAccesseble {
         }
       }
     }
-    $this->r = $paths;
+    return $paths;
   }
 
-  function store($folder) {
+  function store($_paths, $fileName, $folder) {
     $c = '';
-    foreach ($this->r as $lib => $paths) {
+    foreach ($_paths as $lib => $paths) {
       $c .= $this->css->extractCode($paths);
     }
-    Dir::make($folder);
-    file_put_contents($folder.'/'.$this->frontendName.'.css', $c);
-    return $folder.'/'.$this->frontendName.'.css';
+    $f = $folder.'/css/'.$fileName.'.css';
+    file_put_contents($f, $c);
+    return $f;
   }
 
 }

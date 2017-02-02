@@ -3,46 +3,45 @@
 use Tree\Visitor\PreOrderVisitor;
 use Tree\Node\Node;
 
-class SflmJsClassBuilder {
+class SflmJsBuilder {
 
   protected $frontend;
+
+  protected function getSflmBuilderFrontend($frontendName) {
+    return new SflmFrontendJsBuild(new SflmJs($frontendName), $frontendName, [
+      'locale' => 'ru-RU',
+      'jsClassesClass' => 'SflmJsClassesTree',
+      'mtDependenciesClass' => 'SflmMtDependenciesTree'
+    ]);
+  }
 
   /**
    * @param string $classes JS classes separated by quote
    * @param null|string $fileName Name of resulting file
-   * @param string $locale Locale
    * @return $this
    */
-  function storeClass($classes, $fileName = null, $locale = 'en-US') {
+  function storeClass($classes, $fileName = null) {
     SflmCache::clean();
     if (!$fileName) $fileName = 'f_'.str_replace('.', '_', $classes);
-    $this->frontend = new SflmFrontendJsBuild(new SflmJs($fileName), $fileName, [
-      'locale' => $locale,
-      'jsClassesClass' => 'SflmJsClassesTree',
-      'mtDependenciesClass' => 'SflmMtDependenciesTree'
-    ]);
-    $this->frontend->addPath('i/js/ngn/Ngn.js');
+    $frontend = $this->getSflmBuilderFrontend($fileName);
+    $frontend->addPath('i/js/ngn/Ngn.js');
     foreach (explode(',', $classes) as $class) {
       $class = trim($class);
-      $this->frontend->addClass($class);
+      $frontend->addClass($class);
     }
-    $this->frontend->store();
+    $frontend->store();
     return $this;
   }
 
-  function processHtmlAndStore($html, $fileName, $locale = 'en-US') {
+  function processHtmlAndStore($html, $fileName) {
     SflmCache::clean();
-    $this->frontend = new SflmFrontendJsBuild(new SflmJs($fileName), $fileName, [
-      'locale' => $locale,
-      'jsClassesClass' => 'SflmJsClassesTree',
-      'mtDependenciesClass' => 'SflmMtDependenciesTree'
-    ]);
-    $this->frontend->addPath('i/js/ngn/Ngn.js');
-    $this->frontend->processHtml($html, 'builder');
-    $this->frontend->store();
+    $frontend = $this->getSflmBuilderFrontend($fileName);
+    $frontend->addPath('i/js/ngn/Ngn.js');
+    $frontend->processHtml($html, 'builder');
+    $frontend->store();
+    $this->frontend = $frontend;
     return $this;
   }
-
 
   function report() {
     if (!$this->frontend->classes->rootNodes) {
