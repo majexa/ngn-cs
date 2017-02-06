@@ -3,14 +3,14 @@
 use Tree\Visitor\PreOrderVisitor;
 use Tree\Node\Node;
 
-class SflmJsBuilder {
+class JsBuilder {
 
   protected $frontend;
 
   protected function getSflmBuilderFrontend($frontendName) {
-    return new SflmFrontendJsBuild(new SflmJs($frontendName), $frontendName, [
-      'locale' => 'ru-RU',
-      'jsClassesClass' => 'SflmJsClassesTree',
+    return new SflmFrontendJsBuild(new SflmJsForBuilder($frontendName), $frontendName, [
+      'locale'              => 'ru-RU',
+      'jsClassesClass'      => 'SflmJsClassesTree',
       'mtDependenciesClass' => 'SflmMtDependenciesTree'
     ]);
   }

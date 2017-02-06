@@ -3,16 +3,12 @@
 class JsBuildTool {
 
   function classes($classes, $buildFolder, $buildFileName) {
-    Sflm::$webPath = $buildFolder;
-    $this->report((new SflmJsClassBuilder)->storeClass(
-      $classes,
-      $buildFileName
-    )->report(), $buildFolder, $buildFileName);
+    throw new Exception('Not realized');
   }
 
   function html($file, $buildFolder, $buildFileName) {
     Sflm::$webPath = $buildFolder;
-    $this->report((new SflmJsBuilder)->processHtmlAndStore(
+    $this->report((new JsBuilder)->processHtmlAndStore(
       file_get_contents($file),
       $buildFileName
     )->report(), $buildFolder, $buildFileName);
