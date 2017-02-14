@@ -19,7 +19,7 @@ class JsBuildTool {
     print $report['dependencies']['mt'];
     print "\n===== Ngn dependencies:\n";
     print $report['dependencies']['ngn'];
-    print "====\nstored to: ".$buildFolder.'/js/cache/'.$buildFileName.".js\n";
+    print "====\nstored to: ".$buildFolder.'/js/'.$buildFileName.".js\n";
   }
 
 }
