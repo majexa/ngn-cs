@@ -12,7 +12,7 @@ class FormBuildTool {
     //$form->disableJs = true;
     $values = [];
     foreach ($fields as $field) {
-      //$values[$field['name']] = "{%{$field['name']}%}";
+      $values[$field['name']] = "{%{$field['name']}%}";
     }
     $form->setElementsData($values);
     print '<div class="apeform">'.$form->html().'</div>';
