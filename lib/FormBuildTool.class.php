@@ -8,8 +8,7 @@ class FormBuildTool {
   function build($jsonFieldsFile) {
     File::checkExists($jsonFieldsFile);
     $fields = json_decode(file_get_contents($jsonFieldsFile), JSON_FORCE_OBJECT);
-    $form = (new FormBuilder($fields));
-    //$form->disableJs = true;
+    $form = (new FormMock(new Fields($fields)));
     $values = [];
     foreach ($fields as $field) {
       $values[$field['name']] = "{%{$field['name']}%}";
