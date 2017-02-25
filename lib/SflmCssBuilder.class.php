@@ -2,6 +2,8 @@
 
 use Tree\Visitor\PreOrderVisitor;
 
+class NoRootNodeError extends Exception {}
+
 class SflmCssBuilder {
 
   protected $css;
@@ -22,6 +24,9 @@ class SflmCssBuilder {
     $paths['common'] = $this->css->getPaths('common');
     //
     $visitor = new PreOrderVisitor;
+    if (empty($frontend->classes->rootNodes)) {
+      throw new NoRootNodeError();
+    }
     foreach ($frontend->classes->rootNodes as $rootNode) {
       $yield = $rootNode->accept($visitor);
       foreach ($yield as $node) {
@@ -52,6 +57,7 @@ class SflmCssBuilder {
     foreach ($_paths as $lib => $paths) {
       $c .= $this->css->extractCode($paths);
     }
+    Dir::make($f = $folder.'/css');
     $f = $folder.'/css/'.$fileName.'.css';
     file_put_contents($f, $c);
     return $f;
