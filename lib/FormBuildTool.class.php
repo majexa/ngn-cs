@@ -9,11 +9,6 @@ class FormBuildTool {
     File::checkExists($jsonFieldsFile);
     $fields = json_decode(file_get_contents($jsonFieldsFile), JSON_FORCE_OBJECT);
     $form = (new FormMock(new Fields($fields)));
-    $values = [];
-    foreach ($fields as $field) {
-      $values[$field['name']] = "{%{$field['name']}%}";
-    }
-    $form->setElementsData($values);
     print '<div class="apeform">'.$form->html().'</div>';
   }
 

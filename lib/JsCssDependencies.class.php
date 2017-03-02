@@ -41,7 +41,7 @@ class JsCssDependencies extends ArrayAccesseble {
         if ($_paths = $css->getPaths($lib)) {
           $paths[$lib] = $_paths;
         } else {
-          output2("NONE: $lib");
+          //output2("NONE: $lib");
         }
       }
     }

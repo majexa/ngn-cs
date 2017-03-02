@@ -30,7 +30,7 @@ class SflmCssBuilder {
         if ($_paths = $this->css->getPaths($lib)) {
           $paths[$lib] = $_paths;
         } else {
-          output2("NONE: $lib");
+          //output2("NONE: $lib");
         }
       }
     }
@@ -52,6 +52,7 @@ class SflmCssBuilder {
     foreach ($_paths as $lib => $paths) {
       $c .= $this->css->extractCode($paths);
     }
+    Dir::make($folder.'/css');
     $f = $folder.'/css/'.$fileName.'.css';
     file_put_contents($f, $c);
     return $f;
