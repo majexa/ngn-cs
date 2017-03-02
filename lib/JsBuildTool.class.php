@@ -15,6 +15,10 @@ class JsBuildTool {
   }
 
   protected function report($report, $buildFolder, $buildFileName) {
+    if (empty($report['dependencies'])) {
+      print "The are no MooTools dependencies. No NgnJS code?\n";
+      exit(1);
+    }
     print "===== MooTools dependencies:\n";
     print $report['dependencies']['mt'];
     print "\n===== Ngn dependencies:\n";
