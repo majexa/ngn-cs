@@ -6,11 +6,12 @@ class JsBuildTool {
     throw new Exception('Not realized');
   }
 
-  function html($file, $buildFolder, $buildFileName) {
+  function html($file, $buildFolder, $buildFileName, $jsonFieldsFolder) {
     Sflm::$webPath = $buildFolder;
     $this->report((new JsBuilder)->processHtmlAndStore(
       file_get_contents($file),
-      $buildFileName
+      $buildFileName,
+      $jsonFieldsFolder
     )->report(), $buildFolder, $buildFileName);
   }
 

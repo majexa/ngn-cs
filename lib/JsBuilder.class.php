@@ -33,10 +33,30 @@ class JsBuilder {
     return $this;
   }
 
-  function processHtmlAndStore($html, $fileName) {
+  function processHtmlAndStore($html, $fileName, $jsonFieldsFolder = null) {
     SflmCache::clean();
     $frontend = $this->getSflmBuilderFrontend($fileName);
     $frontend->addPath('i/js/ngn/Ngn.js');
+
+    if ($jsonFieldsFolder) {
+      foreach (glob($jsonFieldsFolder.'/*.json') as $jsonFieldsFile) {
+        $fields = json_decode(file_get_contents($jsonFieldsFile), JSON_FORCE_OBJECT);
+        $form = new FormMock(new Fields($fields), [
+          'commonElementOptions' => [
+            'sflmFrontendJs' => $frontend
+          ]
+        ]);
+        $formName = Misc::removeSuffix('.json', basename($jsonFieldsFile));
+        $formHtml = $form->html();
+        $formHtml = str_replace("'", "\\'", $formHtml);
+        $formHtml = str_replace("\n", "\\\n", $formHtml);
+        $code = "Ngn.toObj('Ngn.formTmpl.$formName', $formHtml');\n";
+        $folder = Sflm::$webPath.'/ggg/formTmpl';
+        Dir::make($folder);
+        file_put_contents($folder.'/'.$formName.'.js', $code);
+      }
+    }
+
     $frontend->processHtml($html, 'builder');
     $frontend->store();
     $this->frontend = $frontend;

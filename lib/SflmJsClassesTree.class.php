@@ -38,7 +38,7 @@ class SflmJsClassesTree extends SflmJsClasses {
     }
     $parentNode = $this->parentNode; // save to restore after recursion
     $this->parentNode = $node; // save current parent node
-    parent::addClass($class, $source, $parent, true);
+    parent::addClass($class, $source, $parent, $strict);
     $this->parentNode = $parentNode; // restore after recursion
   }
 
