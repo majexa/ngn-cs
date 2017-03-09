@@ -47,11 +47,16 @@ class JsBuilder {
           ]
         ]);
         $formName = Misc::removeSuffix('.json', basename($jsonFieldsFile));
+        print "\nRendering form '$formName' with such field:\n";
+        print_r($fields);
         $formHtml = $form->html();
+        print "Form render:\n";
+        print $formHtml;
         $formHtml = str_replace("'", "\\'", $formHtml);
         $formHtml = str_replace("\n", "\\\n", $formHtml);
         $code = "Ngn.toObj('Ngn.formTmpl.$formName', $formHtml');\n";
         $folder = Sflm::$webPath.'/ggg/formTmpl';
+
         Dir::make($folder);
         file_put_contents($folder.'/'.$formName.'.js', $code);
       }
