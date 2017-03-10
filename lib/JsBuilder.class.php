@@ -47,18 +47,21 @@ class JsBuilder {
           ]
         ]);
         $formName = Misc::removeSuffix('.json', basename($jsonFieldsFile));
-        print "\nRendering form '$formName' with such field:\n";
-        print_r($fields);
+        print "\nRendering form '$formName' with such fields:\n";
+        print St::enumSsss($fields, '✔ $name: $title', "\n");
+        //print_r($fields);
         $formHtml = $form->html();
-        print "Form render:\n";
+        print "\n";
+        print "Form render result:\n";
         print $formHtml;
+        print "\n";
         $formHtml = str_replace("'", "\\'", $formHtml);
         $formHtml = str_replace("\n", "\\\n", $formHtml);
         $code = "Ngn.toObj('Ngn.formTmpl.$formName', $formHtml');\n";
-        $folder = Sflm::$webPath.'/ggg/formTmpl';
-
+        $folder = Sflm::$absBasePaths['src'].'/js/formTmpl';
         Dir::make($folder);
         file_put_contents($folder.'/'.$formName.'.js', $code);
+        output("Store: ".$folder.'/'.$formName.'.js');
       }
     }
 
