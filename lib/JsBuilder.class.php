@@ -33,38 +33,41 @@ class JsBuilder {
     return $this;
   }
 
+  protected function buildForm(SflmFrontendJsBuild $frontend, $jsonFieldsFile) {
+    $fields = json_decode(file_get_contents($jsonFieldsFile), JSON_FORCE_OBJECT);
+    $form = new FormMock(new Fields($fields), [
+      'commonElementOptions' => [
+        'sflmFrontendJs' => $frontend
+      ]
+    ]);
+    $formName = Misc::removeSuffix('.json', basename($jsonFieldsFile));
+    print "\nRendering form '$formName' with such fields:\n";
+    print St::enumSsss($fields, '✔ $name: $title', "\n");
+    $formHtml = $form->html();
+    print "\n";
+    print "Form render result:\n";
+    print $formHtml;
+    print "\n";
+    $formHtml = str_replace("'", "\\'", $formHtml);
+    $formHtml = str_replace("\n", "\\\n", $formHtml);
+    $code = "Ngn.toObj('Ngn.formTmpl.$formName', '<div class=\"apeform\">$formHtml</div>');\n";
+    $folder = Sflm::$absBasePaths['src'].'/js/formTmpl';
+    Dir::make($folder);
+    file_put_contents($folder.'/'.$formName.'.js', $code);
+    output("Store: ".$folder.'/'.$formName.'.js');
+  }
+
+  protected function buildForms(SflmFrontendJsBuild $frontend, $jsonFieldsFolder) {
+    foreach (glob($jsonFieldsFolder.'/*.json') as $jsonFieldsFile) {
+      $this->buildForm($frontend, $jsonFieldsFile);
+    }
+  }
+
   function processHtmlAndStore($html, $fileName, $jsonFieldsFolder = null) {
     SflmCache::clean();
     $frontend = $this->getSflmBuilderFrontend($fileName);
     $frontend->addPath('i/js/ngn/Ngn.js');
-
-    if ($jsonFieldsFolder) {
-      foreach (glob($jsonFieldsFolder.'/*.json') as $jsonFieldsFile) {
-        $fields = json_decode(file_get_contents($jsonFieldsFile), JSON_FORCE_OBJECT);
-        $form = new FormMock(new Fields($fields), [
-          'commonElementOptions' => [
-            'sflmFrontendJs' => $frontend
-          ]
-        ]);
-        $formName = Misc::removeSuffix('.json', basename($jsonFieldsFile));
-        print "\nRendering form '$formName' with such fields:\n";
-        print St::enumSsss($fields, '✔ $name: $title', "\n");
-        //print_r($fields);
-        $formHtml = $form->html();
-        print "\n";
-        print "Form render result:\n";
-        print $formHtml;
-        print "\n";
-        $formHtml = str_replace("'", "\\'", $formHtml);
-        $formHtml = str_replace("\n", "\\\n", $formHtml);
-        $code = "Ngn.toObj('Ngn.formTmpl.$formName', $formHtml');\n";
-        $folder = Sflm::$absBasePaths['src'].'/js/formTmpl';
-        Dir::make($folder);
-        file_put_contents($folder.'/'.$formName.'.js', $code);
-        output("Store: ".$folder.'/'.$formName.'.js');
-      }
-    }
-
+    if ($jsonFieldsFolder) $this->buildForms($frontend, $jsonFieldsFolder);
     $frontend->processHtml($html, 'builder');
     $frontend->store();
     $this->frontend = $frontend;
