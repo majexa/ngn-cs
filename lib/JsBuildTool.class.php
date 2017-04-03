@@ -16,6 +16,10 @@ class JsBuildTool {
   }
 
   protected function report($report, $buildFolder, $buildFileName) {
+    if (isset($report['message'])) {
+      print $report['message']."\n";
+      return;
+    }
     if (empty($report['dependencies'])) {
       print "The are no MooTools dependencies. No NgnJS code?\n";
       exit(1);

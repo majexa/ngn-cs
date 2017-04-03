@@ -75,8 +75,10 @@ class JsBuilder {
   }
 
   function report() {
+    $report = [];
     if (!$this->frontend->classes->rootNodes) {
-      return 'no changes. clear cache';
+      $report['message'] = 'no changes. clear cache';
+      return $report;
     }
     // MooTools dependencies tree
     $visitor = new PreOrderVisitor;
@@ -86,7 +88,6 @@ class JsBuilder {
       /* @var Node $node */
       $tree .= str_repeat('- ', $node->getDepth()).$node->getValue()."\n";
     }
-    $report = [];
     $report['dependencies']['mt'] = $tree;
     // Ngn dependencies tree
     $tree = '';
