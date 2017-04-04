@@ -24,11 +24,11 @@ class JsBuildTool {
       print "The are no MooTools dependencies. No NgnJS code?\n";
       exit(1);
     }
-    print "===== MooTools dependencies:\n";
+    print "--\n• MooTools dependencies:\n";
     print $report['dependencies']['mt'];
-    print "\n===== Ngn dependencies:\n";
+    print "--\n• Ngn dependencies:\n";
     print $report['dependencies']['ngn'];
-    print "====\nstored to: ".$buildFolder.'/js/'.$buildFileName.".js\n";
+    print "--\nStored to: ".$buildFolder.'/js/'.$buildFileName.".js\n";
   }
 
 }

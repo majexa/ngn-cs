@@ -41,20 +41,24 @@ class JsBuilder {
       ]
     ]);
     $formName = Misc::removeSuffix('.json', basename($jsonFieldsFile));
-    print "\nRendering form '$formName' with such fields:\n";
-    print St::enumSsss($fields, '✔ $name: $title', "\n");
+    if (!REPORT_COMPACT) {
+      print "\nRendering form '$formName' with such fields:\n";
+      print St::enumSsss($fields, '✔ $name: $title', "\n");
+    }
     $formHtml = $form->html();
-    print "\n";
-    print "Form render result:\n";
-    print $formHtml;
-    print "\n";
+    if (!REPORT_COMPACT) {
+      print "\n";
+      print "Form render result:\n";
+      print $formHtml;
+      print "\n";
+    }
     $formHtml = str_replace("'", "\\'", $formHtml);
     $formHtml = str_replace("\n", "\\\n", $formHtml);
     $code = "Ngn.toObj('Ngn.formTmpl.$formName', '<div class=\"apeform\">$formHtml</div>');\n";
     $folder = Sflm::$absBasePaths['src'].'/js/formTmpl';
     Dir::make($folder);
     file_put_contents($folder.'/'.$formName.'.js', $code);
-    output("Store: ".$folder.'/'.$formName.'.js');
+    output("Store form: ".$folder.'/'.$formName.'.js');
   }
 
   protected function buildForms(SflmFrontendJsBuild $frontend, $jsonFieldsFolder) {
@@ -67,17 +71,17 @@ class JsBuilder {
     SflmCache::clean();
     $frontend = $this->getSflmBuilderFrontend($fileName);
     $frontend->addPath('i/js/ngn/Ngn.js');
-    if ($jsonFieldsFolder) $this->buildForms($frontend, $jsonFieldsFolder);
+    //if ($jsonFieldsFolder) $this->buildForms($frontend, $jsonFieldsFolder);
     $frontend->processHtml($html, 'builder');
-    $frontend->store();
     $this->frontend = $frontend;
+    $frontend->store();
     return $this;
   }
 
   function report() {
     $report = [];
     if (!$this->frontend->classes->rootNodes) {
-      $report['message'] = 'no changes. clear cache';
+      $report['message'] = 'No changes in dependencies';
       return $report;
     }
     // MooTools dependencies tree
@@ -86,9 +90,15 @@ class JsBuilder {
     $tree = '';
     foreach ($yield as $node) {
       /* @var Node $node */
-      $tree .= str_repeat('- ', $node->getDepth()).$node->getValue()."\n";
+      if (REPORT_COMPACT) {
+        $tree .= $node->getValue().", ";
+      }
+      else {
+        $tree .= str_repeat('- ', $node->getDepth()).$node->getValue()."\n";
+      }
     }
-    $report['dependencies']['mt'] = $tree;
+    if (REPORT_COMPACT) $tree = rtrim($tree, ', ');
+    $report['dependencies']['mt'] = $tree.(REPORT_COMPACT ? "\n" : '');
     // Ngn dependencies tree
     $tree = '';
     $visitor = new PreOrderVisitor;
@@ -96,11 +106,17 @@ class JsBuilder {
       $yield = $rootNode->accept($visitor);
       foreach ($yield as $node) {
         /* @var SflmClassNode $node */
-        $tree .= str_repeat('- ', $node->getDepth()).$node->getValue()."\n";
+        if (REPORT_COMPACT) {
+          $tree .= $node->getValue().", ";
+        }
+        else {
+          $tree .= str_repeat('- ', $node->getDepth()).$node->getValue()."\n";
+        }
       }
     }
+    if (REPORT_COMPACT) $tree = rtrim($tree, ', ');
     // $yield = $this->frontend->classes->rootNode->accept($visitor);
-    $report['dependencies']['ngn'] = $tree;
+    $report['dependencies']['ngn'] = $tree.(REPORT_COMPACT ? "\n" : '');
     return $report;
   }
 
