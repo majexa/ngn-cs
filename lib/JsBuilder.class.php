@@ -55,7 +55,7 @@ class JsBuilder {
     $formHtml = str_replace("'", "\\'", $formHtml);
     $formHtml = str_replace("\n", "\\\n", $formHtml);
     $code = "Ngn.toObj('Ngn.formTmpl.$formName', '<div class=\"apeform\">$formHtml</div>');\n";
-    $folder = Sflm::$absBasePaths['src'].'/js/formTmpl';
+    $folder = Sflm::$absBasePaths['src'].'/formTmpl';
     Dir::make($folder);
     file_put_contents($folder.'/'.$formName.'.js', $code);
     output("Store form: ".$folder.'/'.$formName.'.js');
@@ -71,10 +71,10 @@ class JsBuilder {
     SflmCache::clean();
     $frontend = $this->getSflmBuilderFrontend($fileName);
     $frontend->addPath('i/js/ngn/Ngn.js');
-    //if ($jsonFieldsFolder) $this->buildForms($frontend, $jsonFieldsFolder);
+    if ($jsonFieldsFolder) $this->buildForms($frontend, $jsonFieldsFolder);
     $frontend->processHtml($html, 'builder');
-    $this->frontend = $frontend;
     $frontend->store();
+    $this->frontend = $frontend;
     return $this;
   }
 
